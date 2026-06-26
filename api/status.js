@@ -11,7 +11,7 @@ module.exports = async function handler(req, res) {
 
   res.status(200).json({
     ok: true,
-    storage: kvAvailable ? "vercel-kv" : "memory-fallback (no persiste entre invocaciones frías)",
+    storage: kvAvailable ? "redis" : "memory-fallback (no persiste entre invocaciones frías)",
     lastSync: meta?.lastSync || null,
     totalItems: meta?.totalItems ?? 0,
     sourcesWithErrors: hasFailures ? meta.sources.filter((s) => !s.ok) : [],
