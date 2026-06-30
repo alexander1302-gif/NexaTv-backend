@@ -9,7 +9,7 @@
 //   ?q=texto         -> búsqueda simple por título/tags (además de la
 //                       búsqueda semántica que ya hace el frontend)
 
-const { getCatalog, getMeta } = require("../lib/store");
+const { getCatalog, getMeta, getManualItems } = require("../lib/store");
 
 function setCors(res) {
   res.setHeader("Access-Control-Allow-Origin", "*");
@@ -24,9 +24,16 @@ module.exports = async function handler(req, res) {
     return;
   }
 
-  const [catalog, meta] = await Promise.all([getCatalog(), getMeta()]);
+  const [catalog, meta, manual] = await Promise.all([
+    getCatalog(),
+    getMeta(),
+    getManualItems(),
+  ]);
 
-  let items = catalog;
+  // El contenido manual va primero — así los títulos agregados a mano
+  // (normalmente más cuidados/curados) aparecen antes que los canales
+  // M3U masivos dentro de cada categoría.
+  let items = [...manual, ...catalog];
   const cat = req.query?.cat;
   const q = (req.query?.q || "").toLowerCase().trim();
 
